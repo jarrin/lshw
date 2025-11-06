@@ -2,11 +2,6 @@
 // ---------- includes/export.php ----------
 require_once __DIR__ . '/database.php';
 
-// Helper functie om XML te escapen
-function xml_escape($str) {
-    return htmlspecialchars($str ?? '', ENT_XML1 | ENT_QUOTES, 'UTF-8');
-}
-
 // ==================== PURE PHP XLSX EXPORT (GEEN LIBRARIES NODIG) ====================
 function export_computers_xlsx_native(mysqli $conn) {
     $filename = 'hardware_inventory_volledig_' . date('Y-m-d_H-i-s') . '.xlsx';
@@ -15,6 +10,7 @@ function export_computers_xlsx_native(mysqli $conn) {
     header('Content-Disposition: attachment; filename="' . $filename . '"');
     header('Cache-Control: max-age=0');
     
+    // Maak een zip file (xlsx is gewoon een zip met XML bestanden)
     $zip = new ZipArchive();
     $temp_file = tempnam(sys_get_temp_dir(), 'xlsx');
     
@@ -22,7 +18,7 @@ function export_computers_xlsx_native(mysqli $conn) {
         die("Cannot create XLSX file");
     }
     
-    // Excel structuur
+    // Basis XML structuur voor Excel
     $zip->addFromString('[Content_Types].xml', get_content_types());
     $zip->addFromString('_rels/.rels', get_rels());
     $zip->addFromString('xl/_rels/workbook.xml.rels', get_workbook_rels());
@@ -30,15 +26,31 @@ function export_computers_xlsx_native(mysqli $conn) {
     $zip->addFromString('xl/styles.xml', get_styles());
     $zip->addFromString('xl/sharedStrings.xml', '<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="0" uniqueCount="0"/>');
     
-    // Alle sheets
+    // Sheet 1: Computers
     $zip->addFromString('xl/worksheets/sheet1.xml', create_computers_sheet($conn));
+    
+    // Sheet 2: RAM
     $zip->addFromString('xl/worksheets/sheet2.xml', create_ram_sheet($conn));
+    
+    // Sheet 3: Storage
     $zip->addFromString('xl/worksheets/sheet3.xml', create_storage_sheet($conn));
+    
+    // Sheet 4: Network
     $zip->addFromString('xl/worksheets/sheet4.xml', create_network_sheet($conn));
+    
+    // Sheet 5: Batteries
     $zip->addFromString('xl/worksheets/sheet5.xml', create_battery_sheet($conn));
+    
+    // Sheet 6: GPUs
     $zip->addFromString('xl/worksheets/sheet6.xml', create_gpu_sheet($conn));
+    
+    // Sheet 7: Sound Cards
     $zip->addFromString('xl/worksheets/sheet7.xml', create_sound_sheet($conn));
+    
+    // Sheet 8: Storage Controllers
     $zip->addFromString('xl/worksheets/sheet8.xml', create_controller_sheet($conn));
+    
+    // Sheet 9: Optical Drives
     $zip->addFromString('xl/worksheets/sheet9.xml', create_drives_sheet($conn));
     
     $zip->close();
@@ -48,48 +60,74 @@ function export_computers_xlsx_native(mysqli $conn) {
     exit;
 }
 
+// Helper functie om XML te escapen
+function xml_escape($str) {
+    return htmlspecialchars($str ?? '', ENT_XML1 | ENT_QUOTES, 'UTF-8');
+}
+
+// Sheet creator functies
 function create_computers_sheet($conn) {
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetData>';
     
+    // Headers
     $xml .= '<row r="1">';
-    $headers = ['ID', 'Serienummer', 'Fabrikant', 'Model', 'Type', 'Form Factor', 
-                'CPU Aantal', 'CPU Model', 'CPU Snelheid', 'Geheugen', 'Moederbord', 
-                'BIOS', 'Import Datum'];
+    $headers = ['ID', 'Serienummer', 'Fabrikant', 'Computer Model', 'Computer Type', 'Form Factor', 
+                'CPU Aantal', 'CPU Model', 'CPU Snelheid', 'Geheugen Totaal', 'Moederbord', 
+                'BIOS Versie', 'XML Bestandsnaam', 'Import Datum', 'Laatste Update'];
     foreach ($headers as $i => $h) {
-        $col = chr(65 + $i);
+        $col = chr(65 + $i); // A, B, C, etc.
         $xml .= '<c r="' . $col . '1" t="inlineStr" s="1"><is><t>' . xml_escape($h) . '</t></is></c>';
     }
     $xml .= '</row>';
     
+    // Data
     $res = $conn->query("SELECT * FROM computers ORDER BY import_date DESC");
     $rowNum = 2;
     while ($row = $res->fetch_assoc()) {
         $xml .= '<row r="' . $rowNum . '">';
         $data = [
-            $row['id'], $row['serial_number'], $row['manufacturer'], $row['computer_model'],
-            $row['computer_type'], $row['form_factor'], $row['cpu_count'], $row['cpu_model'],
-            $row['cpu_speed'], $row['memory_total'], $row['motherboard'], $row['bios_version'],
-            $row['import_date']
+            $row['id'],
+            $row['serial_number'],
+            $row['manufacturer'],
+            $row['computer_model'],
+            $row['computer_type'],
+            $row['form_factor'],
+            $row['cpu_count'],
+            $row['cpu_model'],
+            $row['cpu_speed'],
+            $row['memory_total'],
+            $row['motherboard'],
+            $row['bios_version'],
+            $row['xml_file'],
+            $row['import_date'],
+            $row['updated_date']
         ];
         foreach ($data as $i => $val) {
             $col = chr(65 + $i);
-            $xml .= '<c r="' . $col . $rowNum . '" t="inlineStr"><is><t>' . xml_escape($val) . '</t></is></c>';
+            if ($i === 0 || $i === 6) { // ID en CPU count zijn nummers
+                $xml .= '<c r="' . $col . $rowNum . '"><v>' . xml_escape($val) . '</v></c>';
+            } else {
+                $xml .= '<c r="' . $col . $rowNum . '" t="inlineStr"><is><t>' . xml_escape($val) . '</t></is></c>';
+            }
         }
         $xml .= '</row>';
         $rowNum++;
     }
+    
     $xml .= '</sheetData></worksheet>';
     return $xml;
 }
 
 function create_ram_sheet($conn) {
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetData>';
     
     $xml .= '<row r="1">';
-    $headers = ['Computer ID', 'Serienummer PC', 'Computer Model', 'Slot', 'Grootte GB', 
-                'Type', 'Snelheid MHz', 'Fabrikant', 'Form Factor', 'Serienummer RAM', 'Partnummer'];
+    $headers = ['Computer ID', 'Serienummer', 'Computer Model', 'Slot', 'Grootte (GB)', 
+                'Type', 'Snelheid (MHz)', 'Fabrikant', 'Form Factor', 'Serienummer', 'Partnummer'];
     foreach ($headers as $i => $h) {
         $col = chr(65 + $i);
         $xml .= '<c r="' . $col . '1" t="inlineStr" s="1"><is><t>' . xml_escape($h) . '</t></is></c>';
@@ -105,29 +143,43 @@ function create_ram_sheet($conn) {
     while ($row = $res->fetch_assoc()) {
         $xml .= '<row r="' . $rowNum . '">';
         $data = [
-            $row['computer_id'], $row['comp_serial'], $row['computer_model'], $row['slot'],
-            $row['size_gb'], $row['type'], $row['speed_mhz'], $row['manufacturer'],
-            $row['form_factor'], $row['serial_number'], $row['part_number']
+            $row['computer_id'],
+            $row['comp_serial'],
+            $row['computer_model'],
+            $row['slot'],
+            $row['size_gb'],
+            $row['type'],
+            $row['speed_mhz'],
+            $row['manufacturer'],
+            $row['form_factor'],
+            $row['serial_number'],
+            $row['part_number']
         ];
         foreach ($data as $i => $val) {
             $col = chr(65 + $i);
-            $xml .= '<c r="' . $col . $rowNum . '" t="inlineStr"><is><t>' . xml_escape($val) . '</t></is></c>';
+            if ($i === 0 || $i === 6) { // IDs en speed zijn nummers
+                $xml .= '<c r="' . $col . $rowNum . '"><v>' . xml_escape($val) . '</v></c>';
+            } else {
+                $xml .= '<c r="' . $col . $rowNum . '" t="inlineStr"><is><t>' . xml_escape($val) . '</t></is></c>';
+            }
         }
         $xml .= '</row>';
         $rowNum++;
     }
+    
     $xml .= '</sheetData></worksheet>';
     return $xml;
 }
 
 function create_storage_sheet($conn) {
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetData>';
     
     $xml .= '<row r="1">';
     // Kolommen zoals in het Excel-sjabloon (volgorde belangrijk)
     $headers = ['Computer', 'Serienummer PC', 'Computer Model', 'Disk Model', 'Vendor', 
-                'Grootte GB', 'Type', 'Interface', 'Serienummer Disk', 'SSD/HDD'];
+                'Grootte (GB)', 'Type', 'Interface', 'Serienummer Disk', 'SSD/HDD'];
     foreach ($headers as $i => $h) {
         $col = chr(65 + $i);
         $xml .= '<c r="' . $col . '1" t="inlineStr" s="1"><is><t>' . xml_escape($h) . '</t></is></c>';
@@ -143,9 +195,16 @@ function create_storage_sheet($conn) {
     while ($row = $res->fetch_assoc()) {
         $xml .= '<row r="' . $rowNum . '">';
         $data = [
-            $row['computer_id'], $row['comp_serial'], $row['computer_model'], $row['model'],
-            $row['vendor'], $row['size_gb'], $row['type'], $row['interface'],
-            $row['serial'], ($row['is_ssd'] ? 'SSD' : 'HDD')
+            $row['computer_id'],
+            $row['comp_serial'],
+            $row['computer_model'],
+            $row['model'],
+            $row['vendor'],
+            $row['size_gb'],
+            $row['type'],
+            $row['interface'],
+            $row['serial'],
+            $row['is_ssd'] ? 'Ja' : 'Nee'
         ];
         foreach ($data as $i => $val) {
             $col = chr(65 + $i);
@@ -154,17 +213,19 @@ function create_storage_sheet($conn) {
         $xml .= '</row>';
         $rowNum++;
     }
+    
     $xml .= '</sheetData></worksheet>';
     return $xml;
 }
 
 function create_network_sheet($conn) {
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetData>';
     
     $xml .= '<row r="1">';
-    $headers = ['Computer ID', 'Serienummer PC', 'Computer Model', 'Naam', 'Beschrijving', 
-                'Vendor', 'Model', 'MAC Adres', 'IP Adres', 'Snelheid Mbps', 'Type'];
+    $headers = ['Computer ID', 'Serienummer', 'Computer Model', 'Beschrijving', 'Vendor', 
+                'Model', 'MAC Adres', 'Snelheid (Mbps)', 'Type'];
     foreach ($headers as $i => $h) {
         $col = chr(65 + $i);
         $xml .= '<c r="' . $col . '1" t="inlineStr" s="1"><is><t>' . xml_escape($h) . '</t></is></c>';
@@ -180,9 +241,15 @@ function create_network_sheet($conn) {
     while ($row = $res->fetch_assoc()) {
         $xml .= '<row r="' . $rowNum . '">';
         $data = [
-            $row['computer_id'], $row['comp_serial'], $row['computer_model'], $row['name'],
-            $row['description'], $row['vendor'], $row['model'], $row['mac_address'],
-            $row['ip_address'], $row['speed_mbps'], $row['interface_type']
+            $row['computer_id'],
+            $row['comp_serial'],
+            $row['computer_model'],
+            $row['description'],
+            $row['vendor'],
+            $row['model'],
+            $row['mac_address'],
+            $row['speed_mbps'],
+            $row['interface_type']
         ];
         foreach ($data as $i => $val) {
             $col = chr(65 + $i);
@@ -191,17 +258,19 @@ function create_network_sheet($conn) {
         $xml .= '</row>';
         $rowNum++;
     }
+    
     $xml .= '</sheetData></worksheet>';
     return $xml;
 }
 
 function create_battery_sheet($conn) {
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetData>';
     
     $xml .= '<row r="1">';
-    $headers = ['Computer ID', 'Serienummer PC', 'Computer Model', 'Type', 'Fabrikant', 
-                'Product', 'Capaciteit Wh', 'Serienummer', 'Status'];
+    $headers = ['Computer ID', 'Serienummer', 'Computer Model', 'Type', 'Fabrikant', 
+                'Capaciteit (Wh)', 'Serienummer', 'Status'];
     foreach ($headers as $i => $h) {
         $col = chr(65 + $i);
         $xml .= '<c r="' . $col . '1" t="inlineStr" s="1"><is><t>' . xml_escape($h) . '</t></is></c>';
@@ -217,9 +286,14 @@ function create_battery_sheet($conn) {
     while ($row = $res->fetch_assoc()) {
         $xml .= '<row r="' . $rowNum . '">';
         $data = [
-            $row['computer_id'], $row['comp_serial'], $row['computer_model'], $row['type'],
-            $row['manufacturer'], $row['product'], $row['capacity_wh'],
-            $row['serial_number'], $row['status']
+            $row['computer_id'],
+            $row['comp_serial'],
+            $row['computer_model'],
+            $row['type'],
+            $row['manufacturer'],
+            $row['capacity_wh'],
+            $row['serial_number'],
+            $row['status']
         ];
         foreach ($data as $i => $val) {
             $col = chr(65 + $i);
@@ -228,16 +302,18 @@ function create_battery_sheet($conn) {
         $xml .= '</row>';
         $rowNum++;
     }
+    
     $xml .= '</sheetData></worksheet>';
     return $xml;
 }
 
 function create_gpu_sheet($conn) {
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetData>';
     
     $xml .= '<row r="1">';
-    $headers = ['Computer ID', 'Serienummer PC', 'Computer Model', 'Vendor', 'Model', 'PCI ID', 'Geheugen GB'];
+    $headers = ['Computer ID', 'Serienummer', 'Computer Model', 'Vendor', 'Model', 'PCI ID', 'Geheugen (GB)'];
     foreach ($headers as $i => $h) {
         $col = chr(65 + $i);
         $xml .= '<c r="' . $col . '1" t="inlineStr" s="1"><is><t>' . xml_escape($h) . '</t></is></c>';
@@ -253,8 +329,13 @@ function create_gpu_sheet($conn) {
     while ($row = $res->fetch_assoc()) {
         $xml .= '<row r="' . $rowNum . '">';
         $data = [
-            $row['computer_id'], $row['comp_serial'], $row['computer_model'],
-            $row['vendor'], $row['model'], $row['pci_id'], $row['memory_gb']
+            $row['computer_id'],
+            $row['comp_serial'],
+            $row['computer_model'],
+            $row['vendor'],
+            $row['model'],
+            $row['pci_id'],
+            $row['memory_gb']
         ];
         foreach ($data as $i => $val) {
             $col = chr(65 + $i);
@@ -263,16 +344,18 @@ function create_gpu_sheet($conn) {
         $xml .= '</row>';
         $rowNum++;
     }
+    
     $xml .= '</sheetData></worksheet>';
     return $xml;
 }
 
 function create_sound_sheet($conn) {
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetData>';
     
     $xml .= '<row r="1">';
-    $headers = ['Computer ID', 'Serienummer PC', 'Computer Model', 'Vendor', 'Model', 'Beschrijving'];
+    $headers = ['Computer ID', 'Serienummer', 'Computer Model', 'Vendor', 'Model', 'Beschrijving'];
     foreach ($headers as $i => $h) {
         $col = chr(65 + $i);
         $xml .= '<c r="' . $col . '1" t="inlineStr" s="1"><is><t>' . xml_escape($h) . '</t></is></c>';
@@ -288,8 +371,12 @@ function create_sound_sheet($conn) {
     while ($row = $res->fetch_assoc()) {
         $xml .= '<row r="' . $rowNum . '">';
         $data = [
-            $row['computer_id'], $row['comp_serial'], $row['computer_model'],
-            $row['vendor'], $row['model'], $row['description']
+            $row['computer_id'],
+            $row['comp_serial'],
+            $row['computer_model'],
+            $row['vendor'],
+            $row['model'],
+            $row['description']
         ];
         foreach ($data as $i => $val) {
             $col = chr(65 + $i);
@@ -298,16 +385,18 @@ function create_sound_sheet($conn) {
         $xml .= '</row>';
         $rowNum++;
     }
+    
     $xml .= '</sheetData></worksheet>';
     return $xml;
 }
 
 function create_controller_sheet($conn) {
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetData>';
     
     $xml .= '<row r="1">';
-    $headers = ['Computer ID', 'Serienummer PC', 'Computer Model', 'Vendor', 'Model', 'Type'];
+    $headers = ['Computer ID', 'Serienummer', 'Computer Model', 'Vendor', 'Model', 'Type'];
     foreach ($headers as $i => $h) {
         $col = chr(65 + $i);
         $xml .= '<c r="' . $col . '1" t="inlineStr" s="1"><is><t>' . xml_escape($h) . '</t></is></c>';
@@ -323,8 +412,12 @@ function create_controller_sheet($conn) {
     while ($row = $res->fetch_assoc()) {
         $xml .= '<row r="' . $rowNum . '">';
         $data = [
-            $row['computer_id'], $row['comp_serial'], $row['computer_model'],
-            $row['vendor'], $row['model'], $row['type']
+            $row['computer_id'],
+            $row['comp_serial'],
+            $row['computer_model'],
+            $row['vendor'],
+            $row['model'],
+            $row['type']
         ];
         foreach ($data as $i => $val) {
             $col = chr(65 + $i);
@@ -333,16 +426,18 @@ function create_controller_sheet($conn) {
         $xml .= '</row>';
         $rowNum++;
     }
+    
     $xml .= '</sheetData></worksheet>';
     return $xml;
 }
 
 function create_drives_sheet($conn) {
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetData>';
     
     $xml .= '<row r="1">';
-    $headers = ['Computer ID', 'Serienummer PC', 'Computer Model', 'Type', 'Vendor', 'Model'];
+    $headers = ['Computer ID', 'Serienummer', 'Computer Model', 'Type', 'Vendor', 'Model'];
     foreach ($headers as $i => $h) {
         $col = chr(65 + $i);
         $xml .= '<c r="' . $col . '1" t="inlineStr" s="1"><is><t>' . xml_escape($h) . '</t></is></c>';
@@ -358,8 +453,12 @@ function create_drives_sheet($conn) {
     while ($row = $res->fetch_assoc()) {
         $xml .= '<row r="' . $rowNum . '">';
         $data = [
-            $row['computer_id'], $row['comp_serial'], $row['computer_model'],
-            $row['type'], $row['vendor'], $row['model']
+            $row['computer_id'],
+            $row['comp_serial'],
+            $row['computer_model'],
+            $row['type'],
+            $row['vendor'],
+            $row['model']
         ];
         foreach ($data as $i => $val) {
             $col = chr(65 + $i);
@@ -368,6 +467,7 @@ function create_drives_sheet($conn) {
         $xml .= '</row>';
         $rowNum++;
     }
+    
     $xml .= '</sheetData></worksheet>';
     return $xml;
 }
@@ -423,8 +523,8 @@ function get_workbook() {
 <sheets>
 <sheet name="Computers" sheetId="1" r:id="rId1"/>
 <sheet name="RAM Modules" sheetId="2" r:id="rId2"/>
-<sheet name="Storage (Harddisks)" sheetId="3" r:id="rId3"/>
-<sheet name="Network (NIC)" sheetId="4" r:id="rId4"/>
+<sheet name="Storage Devices" sheetId="3" r:id="rId3"/>
+<sheet name="Network Interfaces" sheetId="4" r:id="rId4"/>
 <sheet name="Batteries" sheetId="5" r:id="rId5"/>
 <sheet name="GPUs" sheetId="6" r:id="rId6"/>
 <sheet name="Sound Cards" sheetId="7" r:id="rId7"/>
@@ -466,19 +566,41 @@ function export_computers_csv(mysqli $conn) {
     $out = fopen('php://output', 'w');
     
     fputcsv($out, [
-        'ID', 'Serienummer', 'Fabrikant', 'Computer Model', 'Computer Type', 'Form Factor',
-        'CPU Aantal', 'CPU Model', 'CPU Snelheid', 'Geheugen Totaal', 'Moederbord',
-        'BIOS Versie', 'XML Bestandsnaam', 'Import Datum', 'Laatste Update'
+        'ID',
+        'Serienummer',
+        'Fabrikant',
+        'Computer Model',
+        'Computer Type',
+        'Form Factor',
+        'CPU Aantal',
+        'CPU Model',
+        'CPU Snelheid',
+        'Geheugen Totaal',
+        'Moederbord',
+        'BIOS Versie',
+        'XML Bestandsnaam',
+        'Import Datum',
+        'Laatste Update'
     ], ';');
 
     if ($res && $res->num_rows) {
         while ($row = $res->fetch_assoc()) {
             fputcsv($out, [
-                $row['id'], $row['serial_number'] ?? '', $row['manufacturer'] ?? '',
-                $row['computer_model'] ?? '', $row['computer_type'] ?? '', $row['form_factor'] ?? '',
-                $row['cpu_count'] ?? 0, $row['cpu_model'] ?? '', $row['cpu_speed'] ?? '',
-                $row['memory_total'] ?? '', $row['motherboard'] ?? '', $row['bios_version'] ?? '',
-                $row['xml_file'] ?? '', $row['import_date'] ?? '', $row['updated_date'] ?? ''
+                $row['id'],
+                $row['serial_number'] ?? '',
+                $row['manufacturer'] ?? '',
+                $row['computer_model'] ?? '',
+                $row['computer_type'] ?? '',
+                $row['form_factor'] ?? '',
+                $row['cpu_count'] ?? 0,
+                $row['cpu_model'] ?? '',
+                $row['cpu_speed'] ?? '',
+                $row['memory_total'] ?? '',
+                $row['motherboard'] ?? '',
+                $row['bios_version'] ?? '',
+                $row['xml_file'] ?? '',
+                $row['import_date'] ?? '',
+                $row['updated_date'] ?? ''
             ], ';');
         }
     }

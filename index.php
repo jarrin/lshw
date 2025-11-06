@@ -45,8 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['xml_file'])) {
     exit;
 }
 
-// Export endpoint
-if (isset($_GET['action']) && $_GET['action'] === 'export') {
+// Export endpoints
+if (isset($_GET['action']) && $_GET['action'] === 'export_xlsx') {
+    export_computers_xlsx_native($conn);
+    exit;
+}
+
+if (isset($_GET['action']) && $_GET['action'] === 'export_csv') {
     export_computers_csv($conn);
     exit;
 }
@@ -110,7 +115,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
             <p>📁 Sleep XML-bestanden hier naartoe<br><small>of klik om te selecteren (.xml)</small></p>
             <input type="file" id="fileInput" multiple accept=".xml" />
         </div>
-        <a href="?action=export" class="btn btn-success">📊 Exporteren (CSV)</a>
+        
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <a href="?action=export_xlsx" class="btn btn-success">📊 Excel Export (9 Tabs)</a>
+            <a href="?action=export_csv" class="btn btn-primary">📄 CSV Export</a>
+        </div>
     </div>
 
     <div id="alertBox"></div>
