@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function uploadFiles(files) {
         const formData = new FormData();
-        files.forEach(file => formData.append('xml_file[]', file));
+    files.forEach(file => formData.append('xml_file[]', file));
 
         showAlert('⏳ Bestanden worden geüpload...', 'info');
 

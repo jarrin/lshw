@@ -1,0 +1,358 @@
+<?xml version="1.0"?>
+<Reports>
+    <Report Product="WipeDrive Enterprise 9.5 64-bit">
+        <KernelVersion>5.6.13-gentoo-x86_64</KernelVersion>
+        <GroupUUID>CEC30706-52F2-4FDC-84D4-89C7BCDA9A2A</GroupUUID>
+        <Hardware>
+            <ComputerVendor>HP</ComputerVendor>
+            <ComputerModel>ProLiant SE1220</ComputerModel>
+            <ComputerSerial>CN7124003P</ComputerSerial>
+            <MotherboardVendor></MotherboardVendor>
+            <MotherboardModel></MotherboardModel>
+            <AssetTag></AssetTag>
+            <ChassisType>Rack Mount Chassis</ChassisType>
+            <TPM Index="1">Not found</TPM>
+            <Processors>
+                <Processor>
+                    <Vendor>Intel</Vendor>
+                    <Name>Intel(R) Xeon(R) CPU E5520 @ 2.27GHz</Name>
+                    <Speed>2300 MHz</Speed>
+                    <ID>Proc 1</ID>
+                    <NumCores>4</NumCores>
+                    <NumThreads>8</NumThreads>
+                    <L1Cache>128 kB</L1Cache>
+                    <L2Cache>1024 kB</L2Cache>
+                    <L3Cache>8192 kB</L3Cache>
+                </Processor>
+            </Processors>
+            <RAM>
+                <Stick>
+                    <Vendor></Vendor>
+                    <Capacity>4096 MB</Capacity>
+                    <Speed>1333 MT/s</Speed>
+                    <FormFactor>DIMM</FormFactor>
+                    <Type>DDR3</Type>
+                    <TypeDetail>Synchronous</TypeDetail>
+                    <SerialNumber></SerialNumber>
+                    <AssetTag></AssetTag>
+                    <PartNumber></PartNumber>
+                </Stick>
+                <MemoryBanks>12</MemoryBanks>
+                <CurrentBanksUsed>1</CurrentBanksUsed>
+                <Description>DDR3 DIMM</Description>
+                <TotalCapacity>4096 MB</TotalCapacity>
+            </RAM>
+            <NICs>
+                <NIC>
+                    <Vendor>Intel Corporation</Vendor>
+                    <Product>82576 Gigabit Network Connection</Product>
+                    <MACAddress>1c:c1:de:72:57:16</MACAddress>
+                    <Speed></Speed>
+                    <PciId>8086:10C9</PciId>
+                </NIC>
+                <NIC>
+                    <Vendor>Intel Corporation</Vendor>
+                    <Product>82576 Gigabit Network Connection</Product>
+                    <MACAddress>1c:c1:de:72:57:17</MACAddress>
+                    <Speed></Speed>
+                    <PciId>8086:10C9</PciId>
+                </NIC>
+            </NICs>
+            <OpticalDrives>
+                <OpticalDrive>
+                    <Vendor>hp</Vendor>
+                    <Description>DVD reader</Description>
+                    <Product>DVD D  DS8D3SH</Product>
+                    <Capabilities>removable audio dvd</Capabilities>
+                </OpticalDrive>
+            </OpticalDrives>
+            <Devices>
+                <Device>
+                    <Vendor>HP</Vendor>
+                    <Product>EF0450FATFE</Product>
+                    <Serial>JYX9W8HM</Serial>
+                    <Firmware></Firmware>
+                    <Gigabytes>450.06</Gigabytes>
+                    <Bytes>450064605184</Bytes>
+                    <SectorSize>512</SectorSize>
+                    <IsSSD>No</IsSSD>
+                    <DriveMediaType>Platter</DriveMediaType>
+                    <Interface>SAS</Interface>
+                    <TrimType>Not Supported</TrimType>
+                    <PSID></PSID>
+                    <RaidDrives>
+                        <RaidDrive>
+                            <Location>[ 1:4 ]</Location>
+                            <Vendor>HP</Vendor>
+                            <Product>EF0450FATFE</Product>
+                            <Serial>JYX9W8HM</Serial>
+                            <Firmware>HPDB</Firmware>
+                            <Gigabytes>450</Gigabytes>
+                        </RaidDrive>
+                    </RaidDrives>
+                </Device>
+                <Device>
+                    <Vendor>HP</Vendor>
+                    <Product>EF0450FATFE</Product>
+                    <Serial>JYVSK3NM</Serial>
+                    <Firmware></Firmware>
+                    <Gigabytes>450.06</Gigabytes>
+                    <Bytes>450064605184</Bytes>
+                    <SectorSize>512</SectorSize>
+                    <IsSSD>No</IsSSD>
+                    <DriveMediaType>Platter</DriveMediaType>
+                    <Interface>SAS</Interface>
+                    <TrimType>Not Supported</TrimType>
+                    <PSID></PSID>
+                    <RaidDrives>
+                        <RaidDrive>
+                            <Location>[ 1:3 ]</Location>
+                            <Vendor>HP</Vendor>
+                            <Product>EF0450FATFE</Product>
+                            <Serial>JYVSK3NM</Serial>
+                            <Firmware>HPDB</Firmware>
+                            <Gigabytes>450</Gigabytes>
+                        </RaidDrive>
+                    </RaidDrives>
+                </Device>
+                <Device>
+                    <Vendor>HP</Vendor>
+                    <Product>EF0450FARMV</Product>
+                    <Serial>3SK0XBXW00009045T15Y</Serial>
+                    <Firmware></Firmware>
+                    <Gigabytes>450.06</Gigabytes>
+                    <Bytes>450064605184</Bytes>
+                    <SectorSize>512</SectorSize>
+                    <IsSSD>No</IsSSD>
+                    <DriveMediaType>Platter</DriveMediaType>
+                    <Interface>SAS</Interface>
+                    <TrimType>Not Supported</TrimType>
+                    <PSID></PSID>
+                    <RaidDrives>
+                        <RaidDrive>
+                            <Location>[ 1:7 ]</Location>
+                            <Vendor>HP</Vendor>
+                            <Product>EF0450FARMV</Product>
+                            <Serial>3SK0XBXW00009045T15Y</Serial>
+                            <Firmware>HPD2</Firmware>
+                            <Gigabytes>450</Gigabytes>
+                        </RaidDrive>
+                    </RaidDrives>
+                </Device>
+                <Device>
+                    <Vendor>HP</Vendor>
+                    <Product>EF0450FATFE</Product>
+                    <Serial>JYXH8WLM</Serial>
+                    <Firmware></Firmware>
+                    <Gigabytes>450.06</Gigabytes>
+                    <Bytes>450064605184</Bytes>
+                    <SectorSize>512</SectorSize>
+                    <IsSSD>No</IsSSD>
+                    <DriveMediaType>Platter</DriveMediaType>
+                    <Interface>SAS</Interface>
+                    <TrimType>Not Supported</TrimType>
+                    <PSID></PSID>
+                    <RaidDrives>
+                        <RaidDrive>
+                            <Location>[ 1:6 ]</Location>
+                            <Vendor>HP</Vendor>
+                            <Product>EF0450FATFE</Product>
+                            <Serial>JYXH8WLM</Serial>
+                            <Firmware>HPDB</Firmware>
+                            <Gigabytes>450</Gigabytes>
+                        </RaidDrive>
+                    </RaidDrives>
+                </Device>
+                <Device>
+                    <Vendor>HP</Vendor>
+                    <Product>EF0450FATFE</Product>
+                    <Serial>JYXH018M</Serial>
+                    <Firmware></Firmware>
+                    <Gigabytes>450.06</Gigabytes>
+                    <Bytes>450064605184</Bytes>
+                    <SectorSize>512</SectorSize>
+                    <IsSSD>No</IsSSD>
+                    <DriveMediaType>Platter</DriveMediaType>
+                    <Interface>SAS</Interface>
+                    <TrimType>Not Supported</TrimType>
+                    <PSID></PSID>
+                    <RaidDrives>
+                        <RaidDrive>
+                            <Location>[ 1:8 ]</Location>
+                            <Vendor>HP</Vendor>
+                            <Product>EF0450FATFE</Product>
+                            <Serial>JYXH018M</Serial>
+                            <Firmware>HPDB</Firmware>
+                            <Gigabytes>450</Gigabytes>
+                        </RaidDrive>
+                    </RaidDrives>
+                </Device>
+                <Device>
+                    <Vendor>HP</Vendor>
+                    <Product>EF0450FATFE</Product>
+                    <Serial>JYXH015M</Serial>
+                    <Firmware></Firmware>
+                    <Gigabytes>450.06</Gigabytes>
+                    <Bytes>450064605184</Bytes>
+                    <SectorSize>512</SectorSize>
+                    <IsSSD>No</IsSSD>
+                    <DriveMediaType>Platter</DriveMediaType>
+                    <Interface>SAS</Interface>
+                    <TrimType>Not Supported</TrimType>
+                    <PSID></PSID>
+                    <RaidDrives>
+                        <RaidDrive>
+                            <Location>[ 1:1 ]</Location>
+                            <Vendor>HP</Vendor>
+                            <Product>EF0450FATFE</Product>
+                            <Serial>JYXH015M</Serial>
+                            <Firmware>HPDB</Firmware>
+                            <Gigabytes>450</Gigabytes>
+                        </RaidDrive>
+                    </RaidDrives>
+                </Device>
+                <Device>
+                    <Vendor>HP</Vendor>
+                    <Product>EF0450FATFE</Product>
+                    <Serial>JYXH8SBM</Serial>
+                    <Firmware></Firmware>
+                    <Gigabytes>450.06</Gigabytes>
+                    <Bytes>450064605184</Bytes>
+                    <SectorSize>512</SectorSize>
+                    <IsSSD>No</IsSSD>
+                    <DriveMediaType>Platter</DriveMediaType>
+                    <Interface>SAS</Interface>
+                    <TrimType>Not Supported</TrimType>
+                    <PSID></PSID>
+                    <RaidDrives>
+                        <RaidDrive>
+                            <Location>[ 1:2 ]</Location>
+                            <Vendor>HP</Vendor>
+                            <Product>EF0450FATFE</Product>
+                            <Serial>JYXH8SBM</Serial>
+                            <Firmware>HPDB</Firmware>
+                            <Gigabytes>450</Gigabytes>
+                        </RaidDrive>
+                    </RaidDrives>
+                </Device>
+                <Device>
+                    <Vendor>HP</Vendor>
+                    <Product>EF0450FATFE</Product>
+                    <Serial>JYXGYYVM</Serial>
+                    <Firmware></Firmware>
+                    <Gigabytes>450.06</Gigabytes>
+                    <Bytes>450064605184</Bytes>
+                    <SectorSize>512</SectorSize>
+                    <IsSSD>No</IsSSD>
+                    <DriveMediaType>Platter</DriveMediaType>
+                    <Interface>SAS</Interface>
+                    <TrimType>Not Supported</TrimType>
+                    <PSID></PSID>
+                    <RaidDrives>
+                        <RaidDrive>
+                            <Location>[ 1:5 ]</Location>
+                            <Vendor>HP</Vendor>
+                            <Product>EF0450FATFE</Product>
+                            <Serial>JYXGYYVM</Serial>
+                            <Firmware>HPDB</Firmware>
+                            <Gigabytes>450</Gigabytes>
+                        </RaidDrive>
+                    </RaidDrives>
+                </Device>
+            </Devices>
+            <DisplayAdapters>
+                <DisplayAdapter>
+                    <Vendor>Advanced Micro Devices, Inc. [AMD/ATI]</Vendor>
+                    <Product>ES1000</Product>
+                    <PciId>1002:515E</PciId>
+                </DisplayAdapter>
+            </DisplayAdapters>
+            <USBPorts>4</USBPorts>
+            <USB2Ports>2</USB2Ports>
+            <USB3Ports>0</USB3Ports>
+            <FirewirePorts>0</FirewirePorts>
+            <ThunderboltPorts>0</ThunderboltPorts>
+            <Thunderbolt2Ports>0</Thunderbolt2Ports>
+            <Thunderbolt3Ports>0</Thunderbolt3Ports>
+        </Hardware>
+        <HardwareTest/>
+        <Jobs>
+            <Job>
+                <JobName>JYXH8SBM</JobName>
+                <UUID>7FBA0FCF-3B22-4E4C-8EB1-78D705248B68</UUID>
+                <UserFields>
+                    <UserField index="1">
+                        <Name>Project</Name>
+                        <Value>570</Value>
+                    </UserField>
+                    <UserField index="2">
+                        <Name>Customer</Name>
+                        <Value>Gflex</Value>
+                    </UserField>
+                    <UserField index="3">
+                        <Name>Asset</Name>
+                        <Value></Value>
+                    </UserField>
+                    <UserField index="4">
+                        <Name>Department</Name>
+                        <Value></Value>
+                    </UserField>
+                    <UserField index="5">
+                        <Name>Contractor</Name>
+                        <Value>ServerParts B.V.</Value>
+                    </UserField>
+                    <UserField index="6">
+                        <Name>Operator</Name>
+                        <Value>Windau</Value>
+                    </UserField>
+                </UserFields>
+                <Operation SecurityCode="16414021124210412051514755719819182221121">
+                    <UUID>D92B27F0-7B43-44D8-8D30-1FC968AB85CB</UUID>
+                    <DiskOperationType Index="1">Wipe</DiskOperationType>
+                    <Method>HMG IS5 - Baseline</Method>
+                    <MethodFullName>HMG Infosec Standard #5 - Baseline</MethodFullName>
+                    <MethodValue>4</MethodValue>
+                    <StartTime>Thursday, 03 Dec 2020 10:47:41</StartTime>
+                    <Duration>01:32:46</Duration>
+                    <ActionResult Index="2">Success</ActionResult>
+                    <DirtySectors>0</DirtySectors>
+                    <DriveErrorsDetected>0</DriveErrorsDetected>
+                    <DCOLocked>No</DCOLocked>
+                    <DCOLockRemoved>No</DCOLockRemoved>
+                    <DCOFound>No</DCOFound>
+                    <DCORemoved>No</DCORemoved>
+                    <HPAFound>No</HPAFound>
+                    <HPARemoved>No</HPARemoved>
+                    <AMAXFound>No</AMAXFound>
+                    <AMAXRemoved>No</AMAXRemoved>
+                    <SecurityLocked>No</SecurityLocked>
+                    <SecurityFrozen>No</SecurityFrozen>
+                    <SecurityFrozenRemoved>No</SecurityFrozenRemoved>
+                    <Passes>1</Passes>
+                    <SecureErasePasses>0</SecureErasePasses>
+                    <SanitizeDeviceCryptoErasePasses>0</SanitizeDeviceCryptoErasePasses>
+                    <SanitizeDeviceBlockErasePasses>0</SanitizeDeviceBlockErasePasses>
+                    <SanitizeDeviceOverwritePasses>0</SanitizeDeviceOverwritePasses>
+                    <OPALCryptoErasePasses>0</OPALCryptoErasePasses>
+                    <TrimPasses>0</TrimPasses>
+                    <SectorsOverwritten>879032432</SectorsOverwritten>
+                    <SectorsNotOverwritten>0</SectorsNotOverwritten>
+                    <SectorsVerified>879032432</SectorsVerified>
+                    <NISTMethodType>Unknown</NISTMethodType>
+                    <NISTRequiredMethodType>Unknown</NISTRequiredMethodType>
+                    <NISTMethodTypeReason>Drives in a RAID configuration cannot be classified as Purge or Clear.</NISTMethodTypeReason>
+                    <Vendor>HP</Vendor>
+                    <Product>EF0450FATFE</Product>
+                    <Serial>JYXH8SBM</Serial>
+                    <Gigabytes>450.06</Gigabytes>
+                    <Bytes>450064605184</Bytes>
+                    <SectorSize>512</SectorSize>
+                    <IsSSD>No</IsSSD>
+                    <DriveMediaType>Platter</DriveMediaType>
+                    <SSDPercentageOfLifeUsed>-1</SSDPercentageOfLifeUsed>
+                    <TpmAction Index="1">Not applicable</TpmAction>
+                </Operation>
+            </Job>
+        </Jobs>
+    </Report>
+</Reports>

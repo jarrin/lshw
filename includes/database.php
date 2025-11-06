@@ -153,5 +153,13 @@ function db(): mysqli {
         }
     }
 
+    // Ensure legacy/missing columns exist (migration safety)
+    // Some installs might have an older 'drives' table without 'capabilities' column.
+    $colCheck = $conn->query("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '" . $conn->real_escape_string(DB_NAME) . "' AND TABLE_NAME = 'drives' AND COLUMN_NAME = 'capabilities'");
+    if ($colCheck && $colCheck->num_rows === 0) {
+        // Add the column if it doesn't exist
+        $conn->query("ALTER TABLE drives ADD COLUMN capabilities TEXT NULL");
+    }
+
     return $conn;
 }

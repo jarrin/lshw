@@ -19,9 +19,42 @@ require_once __DIR__ . '/helpers.php';
 function parse_wipedrive_xml($filepath) {
     if (!file_exists($filepath)) return false;
 
+    if (!file_exists($filepath)) {
+        $GLOBALS['last_parse_error'] = 'File not found';
+        return false;
+    }
+
     libxml_use_internal_errors(true);
-    $xml = simplexml_load_file($filepath);
-    if (!$xml) return false;
+
+    // Lees bestand en probeer control-chars te verwijderen die XML-parser breken
+    $raw = @file_get_contents($filepath);
+    if ($raw === false) {
+        $GLOBALS['last_parse_error'] = 'Kan bestand niet lezen';
+        return false;
+    }
+
+    // Verwijder ongeldige XML control characters: 0x00-0x08, 0x0B-0x0C, 0x0E-0x1F
+    $clean = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $raw);
+
+    // Forceer UTF-8 (als het al UTF-8 is, heeft dit geen effect)
+    $clean = mb_convert_encoding($clean, 'UTF-8', 'UTF-8');
+
+    // Als we iets hebben opgeschoond, noteer dat (handig voor debugging)
+    if ($clean !== $raw) {
+        $GLOBALS['last_parse_error'] = 'XML cleaned: removed invalid control characters';
+    }
+
+    $xml = simplexml_load_string($clean);
+    if (!$xml) {
+        $errs = libxml_get_errors();
+        $msg = [];
+        foreach ($errs as $e) {
+            $msg[] = trim($e->message) . " (line: {$e->line})";
+        }
+        libxml_clear_errors();
+        $GLOBALS['last_parse_error'] = 'XML parse error: ' . ($msg ? implode('; ', $msg) : 'unknown');
+        return false;
+    }
 
     // Meestal: <Reports><Report>...<Hardware>...</Hardware></Report></Reports>
     $report = $xml->Report ?? null;

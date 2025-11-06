@@ -158,17 +158,32 @@ function replace_children(mysqli $conn, int $computer_id, array $data)
             (computer_id, type, vendor, model, description, capabilities, interface)
             VALUES (?, ?, ?, ?, ?, ?, ?)");
         foreach ($data['drives'] as $dr) {
-            $stmt->bind_param(
+            // Normalize fields and avoid undefined index notices
+            $type = $dr['type'] ?? null;
+            $vendor = $dr['vendor'] ?? null;
+            $model = $dr['model'] ?? null;
+            $description = $dr['description'] ?? null;
+            $capabilities = $dr['capabilities'] ?? null;
+            $interface = $dr['interface'] ?? null;
+
+            $ok = $stmt->bind_param(
                 "issssss",
                 $computer_id,
-                $dr['type'],
-                $dr['vendor'],
-                $dr['model'],
-                $dr['description'],
-                $dr['capabilities'],
-                $dr['interface']
+                $type,
+                $vendor,
+                $model,
+                $description,
+                $capabilities,
+                $interface
             );
-            $stmt->execute();
+            if ($ok === false) {
+                $GLOBALS['last_import_error'] = 'bind_param failed for drives: ' . $stmt->error;
+                continue;
+            }
+            if (!$stmt->execute()) {
+                $GLOBALS['last_import_error'] = 'Execute failed (drives): ' . $stmt->error;
+                continue;
+            }
         }
         $stmt->close();
     }
@@ -232,10 +247,13 @@ function replace_children(mysqli $conn, int $computer_id, array $data)
     }
 }
 
-function importXMLToDatabase_relational($filepath, mysqli $conn)
+function importXMLToDatabase_relational($filepath, mysqli $conn, bool $allowDuplicates = false)
 {
     $parsed = parse_wipedrive_xml($filepath);
-    if ($parsed === false) return false;
+    if ($parsed === false) {
+        $GLOBALS['last_import_error'] = $GLOBALS['last_parse_error'] ?? 'Parse failed or invalid XML';
+        return false;
+    }
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -248,12 +266,8 @@ function importXMLToDatabase_relational($filepath, mysqli $conn)
         return true;
     } catch (Throwable $e) {
         $conn->rollback();
-        header('Content-Type: application/json');
-        echo json_encode([
-            'success' => false,
-            'message' => 'Importfout: ' . $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-        exit;
+        // Sla foutmelding op zodat caller deze kan loggen en verder kunnen gaan met batch
+        $GLOBALS['last_import_error'] = 'Importfout: ' . $e->getMessage();
+        return false;
     }
 }
