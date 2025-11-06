@@ -116,7 +116,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
     <div id="alertBox"></div>
 
     <div class="table-wrapper">
-        <h2>📋 Laatste 100 computers</h2>
+        <h2>📋 Laatste geimporteerde computers</h2>
         <table>
             <thead>
             <tr>
