@@ -1,7 +1,7 @@
 <?php
 // ---------- config.php ----------
 define('DB_HOST', 'localhost');
-define('DB_USER', ' rocglas_lshw');
+define('DB_USER', 'rocglas_lshw');
 define('DB_PASS', 'kGJkmfWDGEGKZfumsLrh');
 define('DB_NAME', 'rocglas_lshw');
 
