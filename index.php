@@ -5,10 +5,10 @@ require_once __DIR__ . '/includes/database.php';
 require_once __DIR__ . '/includes/import.php';
 require_once __DIR__ . '/includes/export.php';
 require_once __DIR__ . '/includes/helpers.php';
-
-
+ 
+ 
 $conn = db();
-
+ 
 // Helper: recursively remove directory
 function rrmdir($dir) {
     if (!is_dir($dir)) return;
@@ -20,30 +20,30 @@ function rrmdir($dir) {
     }
     @rmdir($dir);
 }
-
+ 
 // Upload + import endpoint (AJAX)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['xml_file'])) {
     $success = 0;
     $failed = 0;
     $errors = [];
-
+ 
     // Verwerk uploads; accepteer meerdere XML-bestanden of één ZIP met meerdere XMLs.
     set_time_limit(0);
     if (defined('IMPORT_MEMORY_LIMIT')) ini_set('memory_limit', IMPORT_MEMORY_LIMIT);
-
+ 
     foreach ($_FILES['xml_file']['tmp_name'] as $idx => $tmp) {
         $name = basename($_FILES['xml_file']['name'][$idx]);
         if (!is_uploaded_file($tmp)) {
             $failed++; $errors[] = "$name: Upload mislukt";
             continue;
         }
-
+ 
         $dest = XML_DIR . 'temp_' . uniqid() . '_' . preg_replace('/[^\w\.-]+/','_', $name);
         if (!move_uploaded_file($tmp, $dest)) {
             $failed++; $errors[] = "$name: Kon niet verplaatsen";
             continue;
         }
-
+ 
         // Als het een ZIP is: pak uit en verwerk alle XML-bestanden binnenin
         $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
     $allowDuplicates = isset($_POST['allow_duplicates']) && $_POST['allow_duplicates'] === '1';
@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['xml_file'])) {
             }
             continue;
         }
-
+ 
         // Anders verwerk als enkel XML-bestand
     $ok = importXMLToDatabase_relational($dest, $conn, $allowDuplicates);
         if ($ok) {
@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['xml_file'])) {
             @unlink($dest);
         }
     }
-
+ 
     header('Content-Type: application/json');
     echo json_encode([
         'success' => $failed === 0,
@@ -125,17 +125,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['xml_file'])) {
     ]);
     exit;
 }
-
+ 
 // Export endpoints
 if (isset($_GET['action']) && $_GET['action'] === 'export_xlsx') {
     export_computers_xlsx_native($conn);
     exit;
 }
-
-if (isset($_GET['action']) && $_GET['action'] === 'export_csv') {
-    export_computers_csv($conn);
-    exit;
-}
+ 
 ?>
 <!DOCTYPE html>
 <html lang="nl">
@@ -151,7 +147,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export_csv') {
         <h1>🖥️ Hardware Inventarisatie System</h1>
         <p>Windau Diensten - Relationele XML Import & Database Beheer</p>
     </header>
-
+ 
     <div class="stats">
         <div class="stat-box">
             <div class="stat-number">
@@ -190,21 +186,20 @@ if (isset($_GET['action']) && $_GET['action'] === 'export_csv') {
             <div class="stat-label">RAM-modules</div>
         </div>
     </div>
-
+ 
     <div class="controls">
         <div class="upload-area" id="uploadArea">
             <p>📁 Sleep XML-bestanden of een ZIP met XML's hier naartoe<br><small>of klik om te selecteren (.xml, .zip)</small></p>
             <input type="file" id="fileInput" multiple accept=".xml,.zip" />
         </div>
-        
+       
         <div style="display: flex; gap: 10px; margin-top: 15px;">
             <a href="?action=export_xlsx" class="btn btn-success">📊 Excel Export (9 Tabs)</a>
-            <a href="?action=export_csv" class="btn btn-primary">📄 CSV Export (single)</a>
         </div>
     </div>
-
+ 
     <div id="alertBox"></div>
-
+ 
     <div class="table-wrapper">
         <h2>📋 Laatste geimporteerde computers</h2>
         <table>
