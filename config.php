@@ -1,9 +1,9 @@
 <?php
 // ---------- config.php ----------
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'hardware_inventory');
+define('DB_USER', ' rocglas_lshw');
+define('DB_PASS', 'kGJkmfWDGEGKZfumsLrh');
+define('DB_NAME', 'rocglas_lshw');
 
 define('BASE_DIR', __DIR__);
 define('XML_DIR', BASE_DIR . '/xml_files/');
